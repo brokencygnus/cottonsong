@@ -637,6 +637,44 @@ function getReviewImages(n) {
   return Array.from({ length: n }, (_, i) => `/reviews/${i + 1}.jpg`);
 }
 
+function CarouselItem({ index, i, img, transitionRef }) {
+  // raw distance from active index
+  const distance = useTransform(index, (val) => Math.abs(val - i));
+
+  // scale
+  const rawScale = useTransform(distance, [0, 1, 2], [1.2, 1.0, 0.9]);
+  const scale = useSpring(rawScale, { stiffness: 200, damping: 30 });
+  // const transitionScale = useTransform(transitionRef, [0, 1], [0.5, 1]);
+  // const combinedScale = useTransform([transitionScale, smoothScale], ([t, s]) => t * s);
+
+  // opacity animation
+  const rawOpacity = useTransform(distance, [0, 1, 2, 3, 4], [1.0, 0.6, 0.3, 0.1, 0]);
+  const smoothOpacity = useSpring(rawOpacity, { stiffness: 200, damping: 30 });
+  const opacity = useTransform([transitionRef, smoothOpacity], ([t, s]) => t * s);
+
+  // z-index
+  const zIndex = useTransform(index, (val) => {
+    const dist = val - i;             // positive = right, negative = left
+    if (dist === 0) return 30;        // center
+    if (dist > 0) return 25 - dist;   // right side
+    return 25 + dist;                 // left side
+  });
+
+  return (
+    <motion.li
+      key={i}
+      style={{ scale, opacity, zIndex }}
+      className="flex items-center w-[70cqw] md:w-[22cqw] mx-[-5cqw] shrink-0 [container-type:inline-size]"
+    >
+      <img
+        className="h-fit rounded-[4cqw] object-contain shadow-md"
+        src={img}
+        alt=""
+      />
+    </motion.li>
+  )
+}
+
 function ReviewCarousel({ transitionRef, scrollRef }) {
   const containerRef = useRef(null);
   const listRef = useRef(null);
@@ -732,8 +770,6 @@ function ReviewCarousel({ transitionRef, scrollRef }) {
     startXRef.current = currentX;
   };
 
-
-
   return (
     <div
       ref={containerRef}
@@ -750,43 +786,15 @@ function ReviewCarousel({ transitionRef, scrollRef }) {
         className="flex h-full"
         style={{ x }}
       >
-        {extendedImages.map((img, i) => {
-          // raw distance from active index
-          const distance = useTransform(index, (val) => Math.abs(val - i));
-
-          // scale
-          const rawScale = useTransform(distance, [0, 1, 2], [1.2, 1.0, 0.9]);
-          const scale = useSpring(rawScale, { stiffness: 200, damping: 30 });
-          // const transitionScale = useTransform(transitionRef, [0, 1], [0.5, 1]);
-          // const combinedScale = useTransform([transitionScale, smoothScale], ([t, s]) => t * s);
-
-          // opacity animation
-          const rawOpacity = useTransform(distance, [0, 1, 2, 3, 4], [1.0, 0.6, 0.3, 0.1, 0]);
-          const smoothOpacity = useSpring(rawOpacity, { stiffness: 200, damping: 30 });
-          const opacity = useTransform([transitionRef, smoothOpacity], ([t, s]) => t * s);
-
-          // z-index
-          const zIndex = useTransform(index, (val) => {
-            const dist = val - i;             // positive = right, negative = left
-            if (dist === 0) return 30;        // center
-            if (dist > 0) return 25 - dist;   // right side
-            return 25 + dist;                 // left side
-          });
-
-          return (
-            <motion.li
-              key={i}
-              style={{ scale, opacity, zIndex }}
-              className="flex items-center w-[70cqw] md:w-[22cqw] mx-[-5cqw] shrink-0 [container-type:inline-size]"
-            >
-              <img
-                className="h-fit rounded-[4cqw] object-contain shadow-md"
-                src={img}
-                alt=""
-              />
-            </motion.li>
-          )
-        })}
+        {extendedImages.map((img, i) => (
+          <CarouselItem
+            key={i}
+            index={index}
+            i={i}
+            img={img}
+            transitionRef={transitionRef}
+          />
+        ))}
       </motion.ul>
     </div>
   );
@@ -805,6 +813,35 @@ function useBreakpoint(minWidth) {
   }, [minWidth]);
 
   return matches;
+}
+
+function StarItem({ star, i, reviewScroll, starVariant }) {
+  const scrollTranslate = useTransform(reviewScroll, [0, 1], ["0%", `${-80*star.translateFactor^2}%`]);
+  const scrollRotate = useTransform(reviewScroll, [0, 1], [0, 30*star.rotateFactor^2]);
+
+  return (
+    <motion.div
+      key={i + "div"}
+      className="absolute flex -translate-x-1/2 -translate-y-1/2 "
+      style={{
+        y: scrollTranslate,
+        width: `max(${star.size}cqw, ${star.size}cqh)`,
+        height: `max(${star.size}cqw, ${star.size}cqh)`,
+      }}
+      custom={star}
+      variants={starVariant}
+    >
+      <motion.svg
+        key={i + "svg"}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 256 256"
+        className="fill-black"
+        style={{ rotate: scrollRotate }}
+      >
+        <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z" />
+      </motion.svg>
+    </motion.div>
+  );
 }
 
 function StarBackground({ reviewScroll }) {
@@ -852,34 +889,14 @@ function StarBackground({ reviewScroll }) {
       viewport={{ once: true, amount: "all" }}
       className="relative w-full h-full overflow-hidden"
     >
-      {starPositions.map((star, i) => {
-        const scrollTranslate = useTransform(reviewScroll, [0, 1], ["0%", `${-80*star.translateFactor^2}%`]);
-        const scrollRotate = useTransform(reviewScroll, [0, 1], [0, 30*star.rotateFactor^2]);
-
-        return (
-          <motion.div
-            key={i + "div"}
-            className="absolute flex -translate-x-1/2 -translate-y-1/2 "
-            style={{
-              y: scrollTranslate,
-              width: `max(${star.size}cqw, ${star.size}cqh)`,
-              height: `max(${star.size}cqw, ${star.size}cqh)`,
-            }}
-            custom={star}
-            variants={starVariant}
-          >
-            <motion.svg
-              key={i + "svg"}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 256 256"
-              className="fill-black"
-              style={{ rotate: scrollRotate }}
-            >
-              <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z" />
-            </motion.svg>
-          </motion.div>
-        );
-      })}
+      {starPositions.map((star, i) => (
+        <StarItem
+          key= {i}
+          star={star}
+          reviewScroll={reviewScroll}
+          starVariant={starVariant}
+        />
+      ))}
     </motion.div>
   );
 }
