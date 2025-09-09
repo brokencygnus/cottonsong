@@ -1,14 +1,14 @@
 'use client'
 
+import Image from 'next/image';
 import { useState, useRef, useEffect, useLayoutEffect } from 'react'
-import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, ChevronDoubleDownIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from "motion/react"
 import { Typewriter } from "@/app/components/typewriter"
 import clsx from 'clsx'
-import { InstagramLogoIcon, TiktokLogoIcon, WhatsappLogoIcon } from '@phosphor-icons/react/dist/ssr'
-import Shopee from '../../public/shopee_logo.svg';
-import Toco from '../../public/logo-toco-invert.svg';
+import { InstagramLogoIcon, TiktokLogoIcon, WhatsappLogoIcon, StarIcon } from '@phosphor-icons/react/dist/ssr'
+import Shopee from '@/app/assets/shopee_logo.svg'
+import Toco from '@/app/assets/logo-toco-invert.svg'
 
 
 export default function Example() {
@@ -46,7 +46,6 @@ export default function Example() {
     {icon: Shopee, name: "Shopee", href: links.shopee},
     {icon: Toco, name: "Toco", href: links.toco},
   ]
-
   return (
     <div className="flex flex-col bg-white">
       <motion.header
@@ -63,9 +62,11 @@ export default function Example() {
         <nav aria-label="Global" className="flex items-center justify-between">
           <div className="flex lg:flex-1">
             <div className="-m-1.5 p-1.5">
-              <img
+              <Image
                 alt=""
                 src="/cottonsong_outline.svg"
+                width={0}
+                height={0}
                 className="h-8 sm:h-10 md:h-12 w-auto"
               />
             </div>
@@ -99,7 +100,9 @@ export default function Example() {
             <div className="flex items-center justify-between">
               <a href="#" className="-m-1.5 p-1.5">
                 <span className="sr-only">Your Company</span>
-                  <img
+                  <Image
+                    width={0}
+                    height={0}
                     alt=""
                     src="/cottonsong_outline.svg"
                     className="h-8 w-auto"
@@ -368,20 +371,23 @@ export default function Example() {
               <div className="relative group w-full max-w-8xl h-full md:h-auto sm:aspect-1/1 md:aspect-2/1 mx-auto mb-4 lg:mb-8 rounded-[5cqw] overflow-hidden shadow-xl [container-type:inline-size]">
                   <div className="absolute inset-0 pointer-events-none">
                     <img
-                      className="absolute inset-0 h-full md:inset-x-0 md:-top-1/3 md:h-auto object-cover z-0 saturate-50 contrast-95 brightness-95 group-hover:saturate-80 group-hover-contrast-100 group-hover:brightness-100"
+                      className="absolute inset-0 h-full w-auto md:inset-x-0 md:-top-1/3 md:h-auto object-cover z-0 saturate-50 contrast-95 brightness-95 group-hover:saturate-80 group-hover-contrast-100 group-hover:brightness-100"
                       src="/footer_clip.jpg"
+                      alt=""
                     />
                     <div className="absolute inset-0 isolate [mask-image:_linear-gradient(to_bottom,_black_0,_black_10%,transparent_75%)]">
                       <div className="absolute inset-0 bg-cottonsong-purple-400 z-5"/>
                       <img
-                        className="absolute inset-0 h-full md:inset-x-0 md:-top-1/3 md:h-auto object-cover z-10 mix-blend-color-burn [mask-image:_linear-gradient(to_bottom,transparent_-20%,_black_50%)]
+                        className="absolute inset-0 h-full w-auto md:inset-x-0 md:-top-1/3 md:h-auto object-cover z-10 mix-blend-color-burn [mask-image:_linear-gradient(to_bottom,transparent_-20%,_black_50%)]
                         saturate-80 contrast-95 brightness-95 group-hover:saturate-100 group-hover-contrast-100 group-hover:brightness-100"
                         src="/footer_clip.jpg"
+                        alt=""
                       />
                     </div>
                     <img
-                      className="absolute inset-0 h-full md:inset-x-0 md:-top-1/3 md:h-auto object-cover z-10 brightness-95 group-hover:brightness-100"
+                      className="absolute inset-0 h-full w-auto md:inset-x-0 md:-top-1/3 md:h-auto object-cover z-10 brightness-95 group-hover:brightness-100"
                       src="/footer_clip.webp"
+                      alt=""
                     />
                     <div className="absolute inset-0 bg-cottonsong-green-400 z-15 mix-blend-multiply [mask-image:_linear-gradient(to_top,_black_0,transparent_40%)]"/>
                   </div>
@@ -431,7 +437,9 @@ export default function Example() {
             <div className="relative z-40 max-w-8xl mx-auto w-full">
               <div className="flex flex-col sm:flex-row justify-between gap-y-4 gap-x-4 pt-8 pb-16 px-4 sm:px-8 md:px-12 lg:px-16">
                 <div className="flex sm:basis-1/3 shrink-0 max-w-64">
-                  <img
+                  <Image
+                    width={0}
+                    height={0}
                     alt=""
                     className="basis-1/2 sm:basis-auto sm:w-full sm:h-auto"
                     src="/cottonsong_outline.svg"
@@ -831,15 +839,16 @@ function StarItem({ star, i, reviewScroll, starVariant }) {
       custom={star}
       variants={starVariant}
     >
-      <motion.svg
-        key={i + "svg"}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 256 256"
-        className="fill-black"
+      <motion.div
+        className='flex size-full'
         style={{ rotate: scrollRotate }}
       >
-        <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z" />
-      </motion.svg>
+        <StarIcon
+          key={i + "svg"}
+          weight="fill"
+          className="size-full fill-black"
+        />
+      </motion.div>
     </motion.div>
   );
 }

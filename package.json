@@ -10,7 +10,6 @@
     "tailwind:build": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch"
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.7",
     "@heroicons/react": "^2.2.0",
     "@phosphor-icons/react": "^2.1.10",
     "clsx": "^2.1.1",
